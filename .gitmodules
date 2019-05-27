@@ -1,0 +1,3 @@
+[submodule "PyTeaserPython3"]
+	path = PyTeaserPython3
+	url = https://github.com/alanbuxton/PyTeaserPython3.git
