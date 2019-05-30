@@ -1,60 +1,49 @@
 from PyTeaserPython3 import pyteaser
-from gensim.summarization.summarizer import summarize
-
-urls = []
-urls.append('http://www.espnfc.com/english-premier-league/23/blog/post/3862792/champions-league-europa-league-success-for-arsenal-chelsea-and-spurs-shows-power-of-london-effect')
-# urls.append('https://rare-technologies.com/text-summarization-in-python-extractive-vs-abstractive-techniques-revisited/')
-
-results_pyteaser = {}
-results_gensim = {}
+from nytimes import ArticleFetcher
+import argparse
 
 
-def grab_link(inurl):
-    from goose import Goose
-    try:
-        article = Goose().extract(url=inurl)
-        return article
-    except ValueError:
-        print('Goose failed to extract article from url')
-        return None
-    return None
-
-
-def print_result(sentences, array=False):
-    if sentences is None:
-        return
-    if not array:
-        print(sentences)
-        return
-    for sentence in sentences:
-        print(sentence)
-
-
-def summarize_pyteaser(url):
-    return pyteaser.SummarizeUrl(url)
-
-
-def summarize_gensim(url):
-    return summarize(article.cleaned_text)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-q', '--query', type=str, required=True,
+                        help='Query')
+    parser.add_argument('-p', '--pages_limit', type=int, default=1,
+                        help='Maximal number of pages')
+    parser.add_argument('--since', type=str,
+                        help='Start date to filter. Example: 20190501')
+    parser.add_argument('--to', type=str,
+                        help='End date to filter. Example: 20190501')
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    for url in urls:
-        try:
-            article = grab_link(url)
-        except IOError:
-            print('IOError')
-            exit(1)
+    args = parse_args()
+    try:
+        fetcher = ArticleFetcher('nytimes.api_key', debug=True)
+        articles = fetcher.fetch(query=args.query,
+                                 pages_limit=args.pages_limit,
+                                 since=args.since,
+                                 to=args.to)
+        summaries = {}
 
-        results_pyteaser[url] = summarize_pyteaser(url)
-        results_gensim[url] = summarize_gensim(url)
+        for i in range(len(articles)):
+            article = articles[i]
+            sentences = pyteaser.Summarize(article.title, article.content)
 
-    for res in results_pyteaser:
-            print('----- PYTEASER ------')
-            print_result(results_pyteaser[res], array=True)
+            summary = ''
+            for sentence in sentences:
+                summary += '{} '.format(sentence)
+
+            article.set_summary(summary)
+
+            print('[{}]'.format(i))
+            print(article)
+            print('   content:')
+            print(article.content)
             print()
-
-    for res in results_gensim:
-            print('----- GENSIM ------')
-            print_result(results_gensim[res])
-            print()
+    except IOError:
+        print("Please provide NYTimes API key in 'nytimes.api_key' file!")
+        print('You need an access to Article Search API.')
+        print('https://developer.nytimes.com/apis')
+    except KeyboardInterrupt:
+        print()
