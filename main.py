@@ -59,18 +59,12 @@ if __name__ == "__main__":
         for i in range(len(articles)):
             article = articles[i]
             sentences = summarizer.summarize(article.title, article.content)
-
-            summary = ''
-            for sentence in sentences:
-                summary += '{} '.format(sentence)
-
-            article.set_summary(summary)
+            article.set_summary(sentences)
 
             print('[{}]'.format(i))
             print(article)
             print('   content:')
             print(article.content)
-            print()
     except IOError:
         print("Please provide NYTimes API key in 'nytimes.api_key' file!")
         print('You need an access to Article Search API.')

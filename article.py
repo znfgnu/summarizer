@@ -18,8 +18,18 @@ class Article:
         self.subsection = subsection
         self.pub_date = pub_date
 
-    def set_summary(self, summary):
-        self.summary = summary
+    def set_summary(self, sentences):
+        buf = io.StringIO()
+
+        print(sentences)
+
+        for sentence in sentences:
+            print(sentence, file=buf)
+
+        self.summary = buf.getvalue()
+
+        buf.close()
+
 
     def __str__(self):
         buf = io.StringIO()
