@@ -1,5 +1,6 @@
-from PyTeaserPython3 import pyteaser
 from nytimes import ArticleFetcher
+from pyteaser import Summarizer
+from stopwords import stopwords
 import argparse
 
 
@@ -17,9 +18,24 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    config = {
+        'ideal_sentences_nr': 5,
+        'ideal_sentence_words': 20,
+        'num_of_top_keywords': 10,
+        'keyword_article_score_multiplier': 1.5,
+        'category_weights': {
+            'title': 1.5,
+            'frequency': 2.0,
+            'sentence_length': 1.0,
+            'sentence_position': 1.0
+        }
+    }
+
     args = parse_args()
     try:
         fetcher = ArticleFetcher('nytimes.api_key', debug=True)
+        summarizer = Summarizer(stopwords, config)
+
         articles = fetcher.fetch(query=args.query,
                                  pages_limit=args.pages_limit,
                                  since=args.since,
@@ -28,7 +44,7 @@ if __name__ == "__main__":
 
         for i in range(len(articles)):
             article = articles[i]
-            sentences = pyteaser.Summarize(article.title, article.content)
+            sentences = summarizer.summarize(article.title, article.content)
 
             summary = ''
             for sentence in sentences:
