@@ -18,6 +18,12 @@ Fetch articles growing in popularity with web-crawling agents and heuristic appr
 python3 main.py -q <query> [--since <date>] [--to <date>] [-p <pages_limit>]
 ```
 
+or
+
+```bash
+python3 main.py -i <direct_link>
+```
+
 ### Example
 
 ```yaml
