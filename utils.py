@@ -1,4 +1,5 @@
 import re
+from goose import Goose
 
 
 def split_words(text):
@@ -26,3 +27,16 @@ def split_sentences(text):
     s_iter = [''.join(map(str, y)).lstrip() for y in s_iter]
     s_iter.append(sentences[-1])
     return s_iter
+
+
+def grab_article(url):
+    try:
+        extraction = Goose().extract(url=url)
+
+        if not (extraction and extraction.cleaned_text and extraction.title):
+            return None, None
+
+        return extraction.title, extraction.cleaned_text
+    except ValueError:
+        pass
+    return None, None

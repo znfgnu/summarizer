@@ -1,6 +1,6 @@
+import article
 import requests
-from article import Article
-from goose import Goose
+import utils
 
 
 class ArticleFetcher:
@@ -14,18 +14,6 @@ class ArticleFetcher:
 
         self.api_key = api_key
         self.debug = debug
-
-    def _grab_article(self, url):
-        try:
-            extraction = Goose().extract(url=url)
-
-            if not (extraction and extraction.cleaned_text and extraction.title):
-                return None, None
-
-            return extraction.title, extraction.cleaned_text
-        except ValueError:
-            pass
-        return None, None
 
     def _get_first_page(self, query, since=None, to=None):
         if self.debug:
@@ -83,8 +71,8 @@ class ArticleFetcher:
             if self.debug:
                 print('   Fetching: {}'.format(url))
 
-            title, content = self._grab_article(url)
-            articles.append(Article(
+            title, content = utils.grab_article(url)
+            articles.append(article.Article(
                 url=url,
                 title=title,
                 content=content,
