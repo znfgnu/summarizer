@@ -7,6 +7,8 @@ import nytimes
 import pyteaser
 import utils
 
+debug_more = False
+
 
 def parse_args(api_call):
     parser = argparse.ArgumentParser()
@@ -36,6 +38,10 @@ def parse_args(api_call):
 
     if args.ndebug is None:
         args.ndebug = False
+
+    global debug_more
+    if not args.ndebug:
+        debug_more = True
 
     if args.test:
         return args
@@ -68,9 +74,12 @@ def fetch_articles(fetcher_response):
     if not fetcher_response:
         return []
 
+    global debug_more
     articles = []
     for r in fetcher_response:
         url = r['url']
+        if debug_more:
+            print('   Fetching: {}'.format(url))
         title, content = utils.grab_article(url)
         articles.append(article.Article(
             url=url,
