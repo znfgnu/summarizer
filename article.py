@@ -6,16 +6,12 @@ class Article:
                  title,
                  content,
                  abstract=None,
-                 section=None,
-                 subsection=None,
                  pub_date=None):
         self.url = url
         self.title = title
         self.content = content
         self.summary = None
         self.abstract = abstract
-        self.section = section
-        self.subsection = subsection
         self.pub_date = pub_date
 
     def set_summary(self, sentences):
@@ -39,10 +35,6 @@ class Article:
         buf = io.StringIO()
 
         print('       url: {}'.format(self.url), file=buf)
-        if self.section:
-            print('   section: {}'.format(self.section), file=buf)
-        if self.subsection is not None:
-            print('subsection: {}'.format(self.subsection), file=buf)
         if self.pub_date is not None:
             print('  pub date: {}'.format(self.pub_date), file=buf)
         print('     title: {}'.format(self.title), file=buf)
