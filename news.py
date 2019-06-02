@@ -78,6 +78,9 @@ class ArticleFetcher:
         if total_res == 0:
             return []
 
+        if self.debug:
+            print('       Hits: {}'.format(total_res))
+
         response = []
         for a in res['articles']:
             response.append({

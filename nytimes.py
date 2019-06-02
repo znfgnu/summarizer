@@ -65,6 +65,9 @@ class ArticleFetcher:
         if total_res == 0:
             return []
 
+        if self.debug:
+            print('       Hits: {}'.format(total_res))
+
         docs = res['docs']
         response = []
         for doc in docs:

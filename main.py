@@ -121,6 +121,7 @@ def print_articles(articles):
         art = articles[i]
         print('[{}]'.format(i))
         print(art)
+        print('   content:')
         print(art.content)
 
 
