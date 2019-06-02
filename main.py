@@ -29,8 +29,13 @@ def parse_args(api_call):
     parser.add_argument('--api', type=str, choices=api_call.keys(), default='news',
                         help='API Provider (default: news)')
     parser.add_argument('--test', action='store_true',
-                        help='Use example response from API')
+                        help='Use example response from API (api key not required)')
+    parser.add_argument('--ndebug', action='store_true',
+                        help='More quiet')
     args = parser.parse_args()
+
+    if args.ndebug is None:
+        args.ndebug = False
 
     if args.test:
         return args
@@ -79,7 +84,7 @@ def fetch_articles(fetcher_response):
 
 def fetch_from_nytimes(args):
     nyTimesApiFetcher = nytimes.ArticleFetcher('nytimes.api_key',
-                                               debug=True,
+                                               debug=not args.ndebug,
                                                test=args.test)
     response = nyTimesApiFetcher.fetch(query=args.q,
                                        since=args.since,
@@ -91,7 +96,7 @@ def fetch_from_nytimes(args):
 def fetch_from_news(args):
     newsApiFetcher = news.ArticleFetcher(api_key_filename='news.api_key',
                                          sources_filename='news.sources.json',
-                                         debug=True,
+                                         debug=not args.ndebug,
                                          test=args.test)
     response = newsApiFetcher.fetch(sources=args.sources,
                                     query=args.q,
