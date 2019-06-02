@@ -21,7 +21,7 @@ class Article:
     def set_summary(self, sentences):
         buf = io.StringIO()
 
-        print(sentences)
+        # print(sentences)
 
         for sentence in sentences:
             print(sentence, file=buf)
