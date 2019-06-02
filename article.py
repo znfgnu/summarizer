@@ -30,6 +30,10 @@ class Article:
 
         buf.close()
 
+    def print_content(self):
+        if self.content is not None:
+            print('   content:')
+            print(self.content)
 
     def __str__(self):
         buf = io.StringIO()

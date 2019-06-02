@@ -1,0 +1,35 @@
+{
+  "request": "https://newsapi.org/v2/top-headlines?q=Liverpool Tottenham&from=2019-05-02&sortBy=publishedAt&sources=bbc-news&apiKey=YOUR_API_KEY",
+  "response": {
+    "status": "ok",
+    "totalResults": 2,
+    "articles": [
+        {
+            "source": {
+                "id": "bbc-news",
+                "name": "BBC News"
+            },
+            "author": "BBC Sport",
+            "title": "Liverpool fans celebrate winning the Champions League. - BBC Sport",
+            "description": "Watch Liverpool fans react to winning the Champions League after the Reds beat Tottenham 2-0 in Madrid in the final.",
+            "url": "http://www.bbc.co.uk/sport/av/football/48487812",
+            "urlToImage": "https://m.files.bbci.co.uk/modules/bbc-morph-sport-page/3.2.0/images/bbc-sport-logo.png",
+            "publishedAt": "2019-06-01T23:22:55.573319Z",
+            "content": "Watch Liverpool fans react to winning the Champions League after the Reds beat Tottenham 2-0 in Madrid in the final. \r\nREAD MORE:"
+        },
+        {
+            "source": {
+                "id": "bbc-news",
+                "name": "BBC News"
+            },
+            "author": "BBC Sport",
+            "title": "Liverpool beat Spurs 2-0 to win Champions League final in Madrid",
+            "description": "Liverpool are the champions of Europe for the sixth time after beating Tottenham in a lacklustre all-English Champions League final.",
+            "url": "http://www.bbc.co.uk/sport/football/48368443",
+            "urlToImage": "https://ichef.bbci.co.uk/onesport/cps/624/cpsprodpb/BFAD/production/_107196094_liverpool_reuters.jpg",
+            "publishedAt": "2019-06-01T21:20:46Z",
+            "content": "Mohamed Salah (15) is Liverpool's second highest Champions League scorer behind Steven Gerrard (21)\r\nLiverpool erased the disappointment of last season's Champions League final loss by claiming the trophy for the sixth time with victory over Tottenham in Madr… [+4819 chars]"
+        }
+    ]
+  }
+}

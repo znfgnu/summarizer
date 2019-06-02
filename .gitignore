@@ -4,3 +4,4 @@ __pycache__/
 
 # Credentials
 nytimes.api_key
+news.api_key
