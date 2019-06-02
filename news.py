@@ -48,7 +48,8 @@ class ArticleFetcher:
                 return news_example['response']
         else:
             if self.debug:
-                print('   Fetching: {} from {}'.format(query, sources))
+                sources_desc = sources if sources else 'all available sources'
+                print('   Fetching: {} from {}'.format(query, sources_desc))
             return self.client.get_everything(q=query,
                                               sources=sources,
                                               from_param=since,

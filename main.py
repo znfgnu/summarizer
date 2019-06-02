@@ -1,61 +1,158 @@
-from nytimes import ArticleFetcher
-from pyteaser import Summarizer
 from config import config
 from stopwords import stopwords
 import argparse
 import article
+import news
+import nytimes
+import pyteaser
 import utils
 
 
-def parse_args():
+def parse_args(api_call):
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--link', type=str,
                         help='Direct link to an article')
-    parser.add_argument('-q', '--query', type=str,
+    parser.add_argument('-q', type=str,
                         help='Query')
-    parser.add_argument('-p', '--pages_limit', type=int, default=1,
-                        help='Maximal number of pages')
+    parser.add_argument('-p', '--page', type=int,
+                        help='Number of page')
+    parser.add_argument('-s', '--size', type=int,
+                        help='(news API) Page size')
+    parser.add_argument('--sources', type=str,
+                        help='(news API) News sources comma-separated. Popular: '
+                        'abc-news, bbc-news, bild, cnn, financial-post, '
+                        'google-news, time, the-new-york-times, the-washington-times')
     parser.add_argument('--since', type=str,
                         help='Start date to filter. Example: 20190501')
     parser.add_argument('--to', type=str,
                         help='End date to filter. Example: 20190501')
+    parser.add_argument('--api', type=str, choices=api_call.keys(), default='news',
+                        help='API Provider (default: news)')
+    parser.add_argument('--test', action='store_true',
+                        help='Use example response from API')
     args = parser.parse_args()
 
-    if args.link is None and args.query is None:
+    if args.test:
+        return args
+
+    if args.api == 'news':
+        # Provide compatible format
+        if args.since is not None:
+            args.since = '{}-{}-{}'.format(args.since[0:4], args.since[4:6], args.since[6:])
+        if args.to is not None:
+            args.to = '{}-{}-{}'.format(args.to[0:4], args.to[4:6], args.to[6:])
+
+    if args.size:
+        if args.size < 1 or args.size > 100:
+            print('Invalid page size! News API supports range: 1-100')
+            exit(1)
+
+    if args.link is None and args.q is None:
         print('At least one of pair {link, query} should be provided!')
         exit(1)
 
     return args
 
 
+def fetch_directly(link):
+    title, content = utils.grab_article(link)
+    return [article.Article(link, title, content)]
+
+
+def fetch_articles(fetcher_response):
+    if not fetcher_response:
+        return []
+
+    articles = []
+    for r in fetcher_response:
+        url = r['url']
+        title, content = utils.grab_article(url)
+        articles.append(article.Article(
+            url=url,
+            title=title,
+            content=content,
+            abstract=r['abstract'],
+            pub_date=r['pub_date']
+        ))
+    return articles
+
+
+def fetch_from_nytimes(args):
+    nyTimesApiFetcher = nytimes.ArticleFetcher('nytimes.api_key',
+                                               debug=True,
+                                               test=args.test)
+    response = nyTimesApiFetcher.fetch(query=args.q,
+                                       since=args.since,
+                                       to=args.to,
+                                       page=args.page)
+    return fetch_articles(response)
+
+
+def fetch_from_news(args):
+    newsApiFetcher = news.ArticleFetcher(api_key_filename='news.api_key',
+                                         sources_filename='news.sources.json',
+                                         debug=True,
+                                         test=args.test)
+    response = newsApiFetcher.fetch(sources=args.sources,
+                                    query=args.q,
+                                    since=args.since,
+                                    to=args.to,
+                                    page=args.page,
+                                    page_size=args.size)
+    return fetch_articles(response)
+
+
+def print_articles(articles):
+    for i in range(len(articles)):
+        art = articles[i]
+        print('[{}]'.format(i))
+        print(art)
+        print(art.content)
+
+
+def run_news_api(args):
+    # Fetch
+    if args.link is not None:
+        articles = fetch_directly(args.link)
+    else:
+        articles = fetch_from_news(args)
+
+    # Summarize
+    summarizer = pyteaser.Summarizer(stopwords, config)
+    for art in articles:
+        sentences = summarizer.summarize(art.title, art.content)
+        art.set_summary(sentences)
+
+    # Display
+    print_articles(articles)
+
+
+def run_nytimes_api(args):
+    # Fetch
+    if args.link is not None:
+        articles = fetch_directly(args.link)
+    else:
+        articles = fetch_from_nytimes(args)
+
+    # Summarize
+    summarizer = pyteaser.Summarizer(stopwords, config)
+    for art in articles:
+        sentences = summarizer.summarize(art.title, art.content)
+        art.set_summary(sentences)
+
+    # Display
+    print_articles(articles)
+
+
 if __name__ == "__main__":
-    args = parse_args()
+    api_call = {
+        'news': run_news_api,
+        'nytimes': run_nytimes_api
+    }
     try:
-        fetcher = ArticleFetcher('nytimes.api_key', debug=True)
-        summarizer = Summarizer(stopwords, config)
-
-        if args.link is not None:
-            title, content = utils.grab_article(args.link)
-            articles = [article.Article(args.link, title, content)]
-        else:
-            articles = fetcher.fetch(query=args.query,
-                                     pages_limit=args.pages_limit,
-                                     since=args.since,
-                                     to=args.to)
-        summaries = {}
-
-        for i in range(len(articles)):
-            article = articles[i]
-            sentences = summarizer.summarize(article.title, article.content)
-            article.set_summary(sentences)
-
-            print('[{}]'.format(i))
-            print(article)
-            print('   content:')
-            print(article.content)
-    except IOError:
-        print("Please provide NYTimes API key in 'nytimes.api_key' file!")
-        print('You need an access to Article Search API.')
-        print('https://developer.nytimes.com/apis')
+        args = parse_args(api_call)
+        api_call[args.api](args)
     except KeyboardInterrupt:
         print()
+    except IOError:
+        print("Please provide valid API key file at first!")
