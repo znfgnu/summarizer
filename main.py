@@ -2,6 +2,7 @@ from config import config
 from stopwords import stopwords
 import argparse
 import article
+import local
 import news
 import nytimes
 import pyteaser
@@ -52,6 +53,9 @@ def parse_args(api_call):
             args.since = '{}-{}-{}'.format(args.since[0:4], args.since[4:6], args.since[6:])
         if args.to is not None:
             args.to = '{}-{}-{}'.format(args.to[0:4], args.to[4:6], args.to[6:])
+
+    if args.api == 'local':
+        return args
 
     if args.size:
         if args.size < 1 or args.size > 100:
@@ -159,10 +163,25 @@ def run_nytimes_api(args):
     print_articles(articles)
 
 
+def run_local_api(args):
+    # Read
+    articles = local.articles
+
+    # Summarize
+    summarizer = pyteaser.Summarizer(stopwords, config)
+    for art in articles:
+        sentences = summarizer.summarize(art.title, art.content)
+        art.set_summary(sentences)
+
+    # Display
+    print_articles(articles)
+
+
 if __name__ == "__main__":
     api_call = {
         'news': run_news_api,
-        'nytimes': run_nytimes_api
+        'nytimes': run_nytimes_api,
+        'local': run_local_api
     }
     try:
         args = parse_args(api_call)
