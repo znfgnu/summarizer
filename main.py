@@ -3,6 +3,7 @@ from stopwords import stopwords
 import argparse
 import article
 import local
+import merger
 import news
 import nytimes
 import pyteaser
@@ -31,6 +32,8 @@ def parse_args(api_call):
                         help='End date to filter. Example: 20190501')
     parser.add_argument('--api', type=str, choices=api_call.keys(), default='news',
                         help='API Provider (default: news)')
+    parser.add_argument('--policy', type=str, choices=merger.Merger.POLICIES,
+                        help='Article merge policy. Not merge if not provided')
     parser.add_argument('--test', action='store_true',
                         help='Use example response from API (api key not required)')
     parser.add_argument('--ndebug', action='store_true',
@@ -145,6 +148,8 @@ def run_news_api(args):
     # Display
     print_articles(articles)
 
+    return articles
+
 
 def run_nytimes_api(args):
     # Fetch
@@ -162,6 +167,8 @@ def run_nytimes_api(args):
     # Display
     print_articles(articles)
 
+    return articles
+
 
 def run_local_api(args):
     # Read
@@ -176,6 +183,21 @@ def run_local_api(args):
     # Display
     print_articles(articles)
 
+    return articles
+
+
+def run_merger(articles, policy):
+    if policy is None:
+        return
+
+    merg = merger.Merger(policy=policy,
+                         max_articles_in_single_summary=5)
+    final_summary = merg.merge(articles)
+
+    print('----------------------------------------------')
+    print('    merged: {} summaries using "{}" policy'.format(len(articles), policy))
+    print(final_summary)
+
 
 if __name__ == "__main__":
     api_call = {
@@ -185,7 +207,8 @@ if __name__ == "__main__":
     }
     try:
         args = parse_args(api_call)
-        api_call[args.api](args)
+        articles = api_call[args.api](args)
+        run_merger(articles, args.policy)
     except KeyboardInterrupt:
         print()
     except IOError:
