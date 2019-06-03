@@ -20,7 +20,7 @@ class Article:
         # print(sentences)
 
         for sentence in sentences:
-            print(sentence, file=buf)
+            print(sentence.strip(), file=buf)
 
         self.summary = buf.getvalue()
 
