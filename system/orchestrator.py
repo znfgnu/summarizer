@@ -3,6 +3,7 @@ import sys
 import time
 
 from agents.chatbot import ChatBotAgent
+from agents.dispatcher import Dispatcher
 from agents.summarizer import Summarizer
 from system.credentials import CredentialsProvider
 
@@ -38,10 +39,10 @@ class Orchestrator:
                 'sentence_position': 1.0
             }
         }, jid, passwd)
-        summarizer1.start()
+        # summarizer1.start()
 
         jid, passwd = self.credentials.get_summarizer_credentials()
-        summarizer1 = Summarizer({
+        summarizer2 = Summarizer({
             'ideal_sentences_nr': 7,
             'ideal_sentence_words': 15,
             'num_of_top_keywords': 17,
@@ -53,11 +54,15 @@ class Orchestrator:
                 'sentence_position': 1.8
             }
         }, jid, passwd)
-        summarizer1.start()
+        # summarizer2.start()
 
         jid, passwd = self.credentials.get_chatbot_credentials()
         chatbot = ChatBotAgent(jid, passwd)
         chatbot.start()
+
+        jid, passwd = self.credentials.get_dispatcher_credentials()
+        dispatcher = Dispatcher(jid, passwd)
+        dispatcher.start()
 
         self.logger.info("Setup completed.")
 

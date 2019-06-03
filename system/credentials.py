@@ -1,5 +1,6 @@
 try:
-    from system.confidential import TESTING_CREDENTIALS, XMPP_DOMAIN, SUMMARIZER_CREDENTIALS, CHATBOT_CREDENTIALS
+    from system.confidential import TESTING_CREDENTIALS, XMPP_DOMAIN, SUMMARIZER_CREDENTIALS, CHATBOT_CREDENTIALS, \
+    DISPATCHER_CREDENTIALS
 except ImportError:
     print("Create system/confidential.py based on confidential_template.")
 
@@ -11,6 +12,7 @@ class CredentialsProvider:
             'testing': iter(TESTING_CREDENTIALS),
             'summarizer': iter(SUMMARIZER_CREDENTIALS),
             'chatbot': iter(CHATBOT_CREDENTIALS),
+            'dispatcher': iter(DISPATCHER_CREDENTIALS),
         }
 
     def get_credentials(self, type):
@@ -25,3 +27,6 @@ class CredentialsProvider:
 
     def get_chatbot_credentials(self):
         return self.get_credentials('chatbot')
+
+    def get_dispatcher_credentials(self):
+        return self.get_credentials('dispatcher')
