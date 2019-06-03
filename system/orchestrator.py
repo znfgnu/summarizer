@@ -2,6 +2,8 @@ import logging
 import sys
 import time
 
+from agents.chatbot import ChatBotAgent
+from agents.summarizer import Summarizer
 from system.credentials import CredentialsProvider
 
 
@@ -19,11 +21,43 @@ class Orchestrator:
     def setup(self):
         self.logger.info("Setting up...")
         # Create all agents
-        # - Dispatcher
         # - Judges
         # - Summarizers
         # - Fetchers
-        # - Requesters (?)
+
+        jid, passwd = self.credentials.get_summarizer_credentials()
+        summarizer1 = Summarizer({
+            'ideal_sentences_nr': 5,
+            'ideal_sentence_words': 20,
+            'num_of_top_keywords': 10,
+            'keyword_article_score_multiplier': 1.5,
+            'category_weights': {
+                'title': 1.5,
+                'frequency': 2.0,
+                'sentence_length': 1.0,
+                'sentence_position': 1.0
+            }
+        }, jid, passwd)
+        summarizer1.start()
+
+        jid, passwd = self.credentials.get_summarizer_credentials()
+        summarizer1 = Summarizer({
+            'ideal_sentences_nr': 7,
+            'ideal_sentence_words': 15,
+            'num_of_top_keywords': 17,
+            'keyword_article_score_multiplier': 1.7,
+            'category_weights': {
+                'title': 1.4,
+                'frequency': 1.5,
+                'sentence_length': 1.6,
+                'sentence_position': 1.8
+            }
+        }, jid, passwd)
+        summarizer1.start()
+
+        jid, passwd = self.credentials.get_chatbot_credentials()
+        chatbot = ChatBotAgent(jid, passwd)
+        chatbot.start()
 
         self.logger.info("Setup completed.")
 
@@ -31,9 +65,14 @@ class Orchestrator:
         self.logger.info("Started.")
         while True:
             try:
-                time.sleep(3)
-                self.logger.info("Still sleeping...")
+                time.sleep(10)
+                self.logger.info("Stayin' alive.")
             except KeyboardInterrupt:
                 self.logger.info("Keyboard interrupt happened.")
                 break
         self.logger.info("Goodbye!")
+
+
+if __name__ == "__main__":
+    orchestrator = Orchestrator()
+    orchestrator.start()
