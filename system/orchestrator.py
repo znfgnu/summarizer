@@ -45,9 +45,9 @@ class Orchestrator:
 
         jid, passwd = self.credentials.get_summarizer_credentials()
         summarizer2 = Summarizer({
-            'ideal_sentences_nr': 7,
-            'ideal_sentence_words': 15,
-            'num_of_top_keywords': 17,
+            'ideal_sentences_nr': .2,
+            'ideal_sentence_words': 17,
+            'num_of_top_keywords': 15,
             'keyword_article_score_multiplier': 1.7,
             'category_weights': {
                 'title': 1.4,

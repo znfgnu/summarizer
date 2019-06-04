@@ -1,4 +1,6 @@
 from collections import Counter
+
+import math
 from math import fabs
 import utils
 
@@ -138,11 +140,15 @@ class Summarizer:
         keys = self._keywords(text)
         title_words = utils.split_words(title)
 
-        if len(sentences) <= self.ideal_sentences_nr:
-            return sentences
+        if isinstance(self.ideal_sentences_nr, int):
+            if len(sentences) <= self.ideal_sentences_nr:
+                return sentences
 
-        # score setences, and use top of them
-        ranks = self._score(sentences, title_words, keys).most_common(self.ideal_sentences_nr)
+            # score setences, and use top of them
+            ranks = self._score(sentences, title_words, keys).most_common(self.ideal_sentences_nr)
+        else:  # float
+            ranks = self._score(sentences, title_words, keys).most_common(math.ceil(self.ideal_sentences_nr*len(sentences)))
+
         for rank in ranks:
             summaries.append(rank[0])
 
