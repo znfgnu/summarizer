@@ -1,5 +1,6 @@
 from config import config
 from stopwords import stopwords
+from markdown_gen import MarkdownGenerator
 import argparse
 import article
 import local
@@ -10,6 +11,7 @@ import pyteaser
 import utils
 
 debug_more = False
+markdown_file_name = 'markdown.md'
 
 
 def parse_args(api_call):
@@ -34,6 +36,8 @@ def parse_args(api_call):
                         help='API Provider (default: news)')
     parser.add_argument('--policy', type=str, choices=merger.Merger.POLICIES,
                         help='Article merge policy. Not merge if not provided')
+    parser.add_argument('--markdown', action='store_true',
+                        help='Generate markdown file {}'.format(markdown_file_name))
     parser.add_argument('--test', action='store_true',
                         help='Use example response from API (api key not required)')
     parser.add_argument('--ndebug', action='store_true',
@@ -198,6 +202,8 @@ def run_merger(articles, policy):
     print('    merged: {} summaries using "{}" policy'.format(len(articles), policy))
     print(final_summary)
 
+    return final_summary
+
 
 if __name__ == "__main__":
     api_call = {
@@ -208,7 +214,11 @@ if __name__ == "__main__":
     try:
         args = parse_args(api_call)
         articles = api_call[args.api](args)
-        run_merger(articles, args.policy)
+        final_summary = run_merger(articles, args.policy)
+
+        if args.markdown:
+            with open(markdown_file_name, 'w') as f:
+                MarkdownGenerator().generate(f, args, articles, final_summary)
     except KeyboardInterrupt:
         print()
     except IOError:

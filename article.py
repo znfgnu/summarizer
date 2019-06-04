@@ -31,6 +31,19 @@ class Article:
             print('   content:')
             print(self.content)
 
+    def markdown(self):
+        buf = io.StringIO()
+
+        print("### {}".format(self.title), file=buf)
+        print(file=buf)
+        print('[Link]({}) | Published: {}'.format(self.url, self.pub_date), file=buf)
+        print('<p align="justify">{}</p>'.format(self.summary), file=buf)
+
+        markdown_repr = buf.getvalue()
+
+        buf.close()
+        return markdown_repr
+
     def __str__(self):
         buf = io.StringIO()
 
