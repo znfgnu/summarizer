@@ -21,7 +21,10 @@ class JudgementSession:
         return len(self.summaries) == self.summarizers_n
 
     def pick_best(self):
-        return ('all', '---\n'.join(["Author: {}\n\n{}".format(k, v) for k,v in self.summaries.items()]))
+        return ('all', '---\n'.join([
+            "Author: {}\n\n{}".format(k, v)
+            for k, v in list(sorted(self.summaries.items(), key=lambda x: len(x[1])))
+        ]))
         return random.choice(list(self.summaries.items()))
 
 

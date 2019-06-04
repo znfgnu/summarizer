@@ -21,7 +21,10 @@ class SummarizerGensim(ImprovedAgent):
 
                 text = '\n'.join([a['content'] for a in articles])
 
-                response = summarize(text)
+                try:
+                    response = summarize(text)
+                except:
+                    response = ''
 
                 m = Message(to=msg.metadata['judge'])
                 m.set_metadata('ontology', global_strings.ONTOLOGY_SUMMARIZER_JUDGE)
