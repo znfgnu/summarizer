@@ -21,7 +21,7 @@ class JudgementSession:
         return len(self.summaries) == self.summarizers_n
 
     def pick_best(self):
-        return ('all', '\n---\n\n'.join([v for k,v in self.summaries.items()]))
+        return ('all', '---\n'.join(["Author: {}\n\n{}".format(k, v) for k,v in self.summaries.items()]))
         return random.choice(list(self.summaries.items()))
 
 
@@ -35,6 +35,7 @@ class JudgeAgent(ImprovedAgent):
 
     class ReceiveBehav(CyclicBehaviour):
         async def run(self):
+            self.agent.logger.info("alive")
             msg = await self.receive(10)
             if msg:
                 request_uuid = msg.get_metadata('uuid')

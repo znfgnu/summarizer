@@ -11,13 +11,12 @@ from system import global_strings
 class ChatBotAgent(ImprovedAgent):
     class ConversationBehav(CyclicBehaviour):
         async def run(self):
-            self.agent.logger.info("Waiting for message")
             msg = await self.receive(10)
             # No metadata means request from user
             if msg and msg.body and not msg.metadata:
                 self.agent.logger.info("Query: {}".format(str(msg)))
                 m = Message(to=str(msg.sender))
-                m.body = "Hello, back! We're preparing summary for the topic you chose!"
+                m.body = "Hello, back! We're preparing summary of the topic for you!"
                 await self.send(m)
 
                 request_uuid = uuid.uuid4()
@@ -32,7 +31,6 @@ class ChatBotAgent(ImprovedAgent):
 
     class ResponseBehav(CyclicBehaviour):
         async def run(self):
-            self.agent.logger.info("Waiting for judgement...")
             msg = await self.receive(10)
 
             if msg:

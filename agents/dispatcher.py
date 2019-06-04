@@ -29,12 +29,12 @@ class DispatcherState:
 class Dispatcher(ImprovedAgent):
     class RequestBehav(CyclicBehaviour):
         async def run(self):
-            self.agent.logger.info("Dispatcher waiting for requests...")
             msg = await self.receive(10)
 
             if msg:
+                self.agent.logger.info("Dispatcher got request!")
                 request_uuid = msg.get_metadata('uuid')
-                self.agent.sessions[request_uuid] = DispatcherState(2)
+                self.agent.sessions[request_uuid] = DispatcherState(1)
 
                 m = Message()
                 m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_FETCHER)
@@ -42,8 +42,8 @@ class Dispatcher(ImprovedAgent):
                 m.body = msg.body
                 m.to = 'fetcher1@mokki.org'
                 await self.send(m)
-                m.to = 'fetcher2@mokki.org'
-                await self.send(m)
+                # m.to = 'fetcher2@mokki.org'
+                # await self.send(m)
 
     class ArticlesBehav(CyclicBehaviour):
         async def run(self):
@@ -53,6 +53,7 @@ class Dispatcher(ImprovedAgent):
                 request_uuid = msg.get_metadata('uuid')
                 articles = json.loads(msg.body)
                 self.agent.sessions[request_uuid].add_response(articles)
+                self.agent.logger.info("Dispatcher received articles {}/{}".format(self.agent.sessions[request_uuid].responses_received, self.agent.sessions[request_uuid].responses_needed))
 
                 if self.agent.sessions[request_uuid].is_ready_to_go():
                     articles_list = self.agent.sessions[request_uuid].get_sorted_articles()
@@ -70,13 +71,15 @@ class Dispatcher(ImprovedAgent):
                     await self.send(m)
                     m.to = 'summarizer2@mokki.org'
                     await self.send(m)
+                    m.to = 'summarizer3@mokki.org'
+                    await self.send(m)
 
                     # 2. Judge
                     m = Message()
                     m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_JUDGE)
                     m.set_metadata('uuid', request_uuid)
                     # m.set_metadata('timeout', '20')
-                    m.set_metadata('summarizers', '2')
+                    m.set_metadata('summarizers', '3')
                     m.body = response
 
                     m.to = 'judge1@mokki.org'

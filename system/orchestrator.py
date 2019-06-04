@@ -7,6 +7,7 @@ from agents.dispatcher import Dispatcher
 from agents.fetchers.nyt_fetcher import NYTFetcherAgent
 from agents.judge import JudgeAgent
 from agents.summarizer import Summarizer
+from agents.summarizer_gensim import SummarizerGensim
 from system.credentials import CredentialsProvider
 
 
@@ -57,6 +58,10 @@ class Orchestrator:
             }
         }, jid, passwd)
         summarizer2.start()
+
+        jid, passwd = self.credentials.get_summarizer_credentials()
+        summarizer3 = SummarizerGensim(jid, passwd)
+        summarizer3.start()
 
         jid, passwd = self.credentials.get_chatbot_credentials()
         chatbot = ChatBotAgent(jid, passwd)
