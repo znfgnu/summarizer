@@ -22,7 +22,7 @@ class JudgementSession:
 
     def pick_best(self):
         return ('all', '---\n'.join([
-            "Author: {}\n\n{}".format(k, v)
+            "\nAuthor: {} ({} chars)\n\n{}".format(k, len(v), v)
             for k, v in list(sorted(self.summaries.items(), key=lambda x: len(x[1])))
         ]))
         return random.choice(list(self.summaries.items()))

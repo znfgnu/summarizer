@@ -60,8 +60,16 @@ class Orchestrator:
         summarizer2.start()
 
         jid, passwd = self.credentials.get_summarizer_credentials()
-        summarizer3 = SummarizerGensim(jid, passwd)
+        summarizer3 = SummarizerGensim(1000, jid, passwd)
         summarizer3.start()
+
+        jid, passwd = self.credentials.get_summarizer_credentials()
+        summarizer4 = SummarizerGensim(2000, jid, passwd)
+        summarizer4.start()
+
+        jid, passwd = self.credentials.get_summarizer_credentials()
+        summarizer5 = SummarizerGensim(4000, jid, passwd)
+        summarizer5.start()
 
         jid, passwd = self.credentials.get_chatbot_credentials()
         chatbot = ChatBotAgent(jid, passwd)
@@ -75,10 +83,10 @@ class Orchestrator:
         nytfetcher = NYTFetcherAgent(jid, passwd)
         nytfetcher.start()
 
-        # TODO NewsAPI instead of doubled NYT
-        jid, passwd = self.credentials.get_fetcher_credentials()
-        nytfetcher = NYTFetcherAgent(jid, passwd)
-        nytfetcher.start()
+        # # TODO NewsAPI instead of doubled NYT
+        # jid, passwd = self.credentials.get_fetcher_credentials()
+        # nytfetcher = NYTFetcherAgent(jid, passwd)
+        # nytfetcher.start()
 
         jid, passwd = self.credentials.get_judge_credentials()
         judge = JudgeAgent(jid, passwd)

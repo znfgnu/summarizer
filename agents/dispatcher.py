@@ -73,13 +73,17 @@ class Dispatcher(ImprovedAgent):
                     await self.send(m)
                     m.to = 'summarizer3@mokki.org'
                     await self.send(m)
+                    m.to = 'summarizer4@mokki.org'
+                    await self.send(m)
+                    m.to = 'summarizer5@mokki.org'
+                    await self.send(m)
 
                     # 2. Judge
                     m = Message()
                     m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_JUDGE)
                     m.set_metadata('uuid', request_uuid)
                     # m.set_metadata('timeout', '20')
-                    m.set_metadata('summarizers', '3')
+                    m.set_metadata('summarizers', '5')
                     m.body = response
 
                     m.to = 'judge1@mokki.org'

@@ -19,12 +19,13 @@ class SummarizerGensim(ImprovedAgent):
                 self.agent.logger.info("Message received with content: {}".format(str(msg)))
                 articles = json.loads(msg.body)
 
-                text = '\n'.join([a['content'] for a in articles])
+                response = '\n'.join([a['content'] for a in articles])
 
-                try:
-                    response = summarize(text)
-                except:
-                    response = ''
+                while len(response) > self.agent.max_chars:
+                    try:
+                        response = summarize(response)
+                    except:
+                        response = ''
 
                 m = Message(to=msg.metadata['judge'])
                 m.set_metadata('ontology', global_strings.ONTOLOGY_SUMMARIZER_JUDGE)
@@ -37,3 +38,7 @@ class SummarizerGensim(ImprovedAgent):
         t = Template()
         t.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_SUMMARIZER)
         self.add_behaviour(b, t)
+
+    def __init__(self, max_chars, *args, **kwargs):
+        self.max_chars = max_chars
+        super().__init__(*args, **kwargs)

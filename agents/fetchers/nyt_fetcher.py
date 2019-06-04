@@ -1,5 +1,6 @@
 import json
 
+from datetime import timedelta, datetime
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
@@ -16,7 +17,7 @@ class NYTFetcherAgent(Agent):
             msg = await self.receive(10)
 
             if msg:
-                result = self.agent.article_fetcher.fetch(msg.body, since="2019-05-20")
+                result = self.agent.article_fetcher.fetch(msg.body, since=datetime.strftime(datetime.now() - timedelta(7), '%Y-%m-%d'))
                 articles = fetch_articles(result)
 
                 response = json.dumps([
