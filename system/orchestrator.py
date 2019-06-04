@@ -4,6 +4,7 @@ import time
 
 from agents.chatbot import ChatBotAgent
 from agents.dispatcher import Dispatcher
+from agents.fetchers.news_fetcher import NewsFetcherAgent
 from agents.fetchers.nyt_fetcher import NYTFetcherAgent
 from agents.judge import JudgeAgent
 from agents.summarizer import Summarizer
@@ -83,10 +84,9 @@ class Orchestrator:
         nytfetcher = NYTFetcherAgent(jid, passwd)
         nytfetcher.start()
 
-        # # TODO NewsAPI instead of doubled NYT
-        # jid, passwd = self.credentials.get_fetcher_credentials()
-        # nytfetcher = NYTFetcherAgent(jid, passwd)
-        # nytfetcher.start()
+        jid, passwd = self.credentials.get_fetcher_credentials()
+        nytfetcher = NewsFetcherAgent("bbc-news, cnn", jid, passwd)
+        nytfetcher.start()
 
         jid, passwd = self.credentials.get_judge_credentials()
         judge = JudgeAgent(jid, passwd)

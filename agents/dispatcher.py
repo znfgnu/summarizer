@@ -34,7 +34,7 @@ class Dispatcher(ImprovedAgent):
             if msg:
                 self.agent.logger.info("Dispatcher got request!")
                 request_uuid = msg.get_metadata('uuid')
-                self.agent.sessions[request_uuid] = DispatcherState(1)
+                self.agent.sessions[request_uuid] = DispatcherState(2)
 
                 m = Message()
                 m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_FETCHER)
@@ -42,8 +42,8 @@ class Dispatcher(ImprovedAgent):
                 m.body = msg.body
                 m.to = 'fetcher1@mokki.org'
                 await self.send(m)
-                # m.to = 'fetcher2@mokki.org'
-                # await self.send(m)
+                m.to = 'fetcher2@mokki.org'
+                await self.send(m)
 
     class ArticlesBehav(CyclicBehaviour):
         async def run(self):

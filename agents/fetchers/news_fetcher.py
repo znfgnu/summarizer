@@ -6,18 +6,18 @@ from spade.message import Message
 from spade.template import Template
 
 from agents.improved_agent import ImprovedAgent
-from apis import nytimes
+from apis import news_api
 from apis.fetch_articles import fetch_articles
 from system import global_strings
 
 
-class NYTFetcherAgent(ImprovedAgent):
+class NewsFetcherAgent(ImprovedAgent):
     class FetchBehav(CyclicBehaviour):
         async def run(self):
             msg = await self.receive(10)
 
             if msg:
-                result = self.agent.article_fetcher.fetch(msg.body,
+                result = self.agent.article_fetcher.fetch(self.agent.sources, msg.body,
                                                           since=datetime.strftime(datetime.now() - timedelta(7),
                                                                                   '%Y-%m-%d'))
                 articles = fetch_articles(result)
@@ -46,6 +46,7 @@ class NYTFetcherAgent(ImprovedAgent):
         t.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_FETCHER)
         self.add_behaviour(b, t)
 
-    def __init__(self, *args, **kwargs):
-        self.article_fetcher = nytimes.ArticleFetcher()
+    def __init__(self, sources, *args, **kwargs):
+        self.article_fetcher = news_api.ArticleFetcher()
+        self.sources = sources
         super().__init__(*args, **kwargs)
