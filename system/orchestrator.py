@@ -4,6 +4,7 @@ import time
 
 from agents.chatbot import ChatBotAgent
 from agents.dispatcher import Dispatcher
+from agents.fetchers.nyt_fetcher import NYTFetcherAgent
 from agents.summarizer import Summarizer
 from system.credentials import CredentialsProvider
 
@@ -63,6 +64,10 @@ class Orchestrator:
         jid, passwd = self.credentials.get_dispatcher_credentials()
         dispatcher = Dispatcher(jid, passwd)
         dispatcher.start()
+
+        jid, passwd = self.credentials.get_fetcher_credentials()
+        nytfetcher = NYTFetcherAgent(jid, passwd)
+        nytfetcher.start()
 
         self.logger.info("Setup completed.")
 
