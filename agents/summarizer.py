@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from spade.behaviour import CyclicBehaviour
