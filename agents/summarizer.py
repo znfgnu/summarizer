@@ -1,3 +1,5 @@
+import json
+
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 from spade.template import Template
@@ -19,15 +21,21 @@ class Summarizer(ImprovedAgent):
             self.agent.logger.info("Waiting for requests...")
             msg = await self.receive(timeout=10)
             if msg:
-                self.agent.logger.info("Message received with content: {}".format(str(msg)))
-                response = self.agent.summarizer.summarize("Test title", msg.body)
+                # self.agent.logger.info("Message received with content: {}".format(str(msg)))
+                articles = json.loads(msg.body)
 
-                m = Message(to=msg.metadata['to'])
+                text = '\n'.join([a['content'] for a in articles])
+
+                response = self.agent.summarizer.summarize("Test title", text)
+
+                m = Message(to=msg.metadata['judge'])
+                m.set_metadata('ontology', global_strings.ONTOLOGY_SUMMARIZER_JUDGE)
+                m.set_metadata('uuid', msg.get_metadata('uuid'))
                 m.body = '\n'.join(response)
                 await self.send(m)
 
     async def setup(self):
         b = self.SummarizeBehav()
         t = Template()
-        t.metadata = {'ontology': global_strings.REQUEST_SUMMARIZE_ONTOLOGY}
+        t.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_SUMMARIZER)
         self.add_behaviour(b, t)

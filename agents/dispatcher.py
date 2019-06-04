@@ -39,7 +39,7 @@ class Dispatcher(ImprovedAgent):
                 m = Message()
                 m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_FETCHER)
                 m.set_metadata('uuid', msg.get_metadata('uuid'))
-                m.body = "FC Barcelona"
+                m.body = msg.body
                 m.to = 'fetcher1@mokki.org'
                 await self.send(m)
                 m.to = 'fetcher2@mokki.org'
@@ -57,19 +57,38 @@ class Dispatcher(ImprovedAgent):
                 if self.agent.sessions[request_uuid].is_ready_to_go():
                     articles_list = self.agent.sessions[request_uuid].get_sorted_articles()
                     response = json.dumps(articles_list)
-                    # For now the same response goes to both: judges and summarizers
-                    # ...soon
 
-                    # mock ; return to chatbot
-                    m = Message(to="chatbot@mokki.org")
-                    m.set_metadata('ontology', global_strings.ONTOLOGY_JUDGE_CHATBOT)
+                    # For now the same response goes to both: judges and summarizers:
+                    # 1. summarizers
+                    m = Message()
+                    m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_SUMMARIZER)
                     m.set_metadata('uuid', request_uuid)
-                    m.body = str(response)
+                    m.set_metadata('judge', 'judge1@mokki.org')
+                    m.body = response
+
+                    m.to = 'summarizer1@mokki.org'
+                    await self.send(m)
+                    m.to = 'summarizer2@mokki.org'
                     await self.send(m)
 
-                    # 1. summarizers
-                    # 2. judge
+                    # 2. Judge
+                    m = Message()
+                    m.set_metadata('ontology', global_strings.ONTOLOGY_DISPATCHER_JUDGE)
+                    m.set_metadata('uuid', request_uuid)
+                    # m.set_metadata('timeout', '20')
+                    m.set_metadata('summarizers', '2')
+                    m.body = response
+
+                    m.to = 'judge1@mokki.org'
+                    await self.send(m)
+
+                    # mock ; return to chatbot
+                    # m.set_metadata('ontology', global_strings.ONTOLOGY_JUDGE_CHATBOT)
+                    # m.to = 'chatbot@mokki.org'
+                    # await self.send(m)
+
                     # remove session - not needed anymore
+                    del self.agent.sessions[request_uuid]
 
     async def setup(self):
         b = self.RequestBehav()
