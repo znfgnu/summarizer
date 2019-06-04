@@ -1,3 +1,5 @@
+import json
+
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
@@ -17,7 +19,7 @@ class NYTFetcherAgent(Agent):
                 result = self.agent.article_fetcher.fetch(msg.body, since="2019-05-20")
                 articles = fetch_articles(result)
 
-                response = str([
+                response = json.dumps([
                     {
                         'title': a.title,
                         'abstract': a.abstract,

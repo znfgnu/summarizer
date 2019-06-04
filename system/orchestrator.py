@@ -69,6 +69,10 @@ class Orchestrator:
         nytfetcher = NYTFetcherAgent(jid, passwd)
         nytfetcher.start()
 
+        jid, passwd = self.credentials.get_fetcher_credentials()
+        nytfetcher = NYTFetcherAgent(jid, passwd)
+        nytfetcher.start()
+
         self.logger.info("Setup completed.")
 
     def run(self):
