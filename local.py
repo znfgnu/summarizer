@@ -127,8 +127,8 @@ Tottenham or Ajax await in the June 1 final in Madrid. Ajax leads 1-0 from the f
         """
     ),
     article.Article(
-        url="Liverpool Stage Utterly Sensational 4-0 Comeback Over Barcelona To Reach Champions League Final",
-        title="https://deadspin.com/liverpool-stage-utterly-sensational-4-0-comeback-over-b-1834593091",
+        url="https://deadspin.com/liverpool-stage-utterly-sensational-4-0-comeback-over-b-1834593091",
+        title="Liverpool Stage Utterly Sensational 4-0 Comeback Over Barcelona To Reach Champions League Final",
         abstract="Liverpool Stage Utterly Sensational 4-0 Comeback Over Barcelona To Reach Champions League Final",
         pub_date="2019-05-07",
         content="""
